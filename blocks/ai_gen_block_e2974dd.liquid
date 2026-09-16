@@ -1,0 +1,614 @@
+{% doc %}
+  @prompt
+    Create a Size Chart accordion block for a product page. Before the "Size chart" title text, display the 📏 ruler emoji. When clicked, it expands to show an image (with an image picker setting so the merchant can upload their size chart photo) followed by a size chart table. The block should match a modern, clean product page style.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-size-chart-accordion-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+  }
+
+  .ai-size-chart-header-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 16px 20px;
+    background-color: {{ block.settings.header_background }};
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-size-chart-header-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.header_hover_background }};
+  }
+
+  .ai-size-chart-title-wrapper-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-size-chart-emoji-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    line-height: 1;
+  }
+
+  .ai-size-chart-title-{{ ai_gen_id }} {
+    margin: 0;
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    font-weight: 600;
+  }
+
+  .ai-size-chart-icon-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    color: {{ block.settings.title_color }};
+  }
+
+  .ai-size-chart-icon-{{ ai_gen_id }}.open {
+    transform: rotate(180deg);
+  }
+
+  .ai-size-chart-content-{{ ai_gen_id }} {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background-color: {{ block.settings.content_background }};
+  }
+
+  .ai-size-chart-content-{{ ai_gen_id }}.open {
+    max-height: 2000px;
+  }
+
+  .ai-size-chart-inner-{{ ai_gen_id }} {
+    padding: 20px;
+  }
+
+  .ai-size-chart-image-wrapper-{{ ai_gen_id }} {
+    margin-bottom: 20px;
+  }
+
+  .ai-size-chart-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-size-chart-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: #f4f4f4;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+
+  .ai-size-chart-image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    max-height: 200px;
+  }
+
+  .ai-size-chart-table-wrapper-{{ ai_gen_id }} {
+    overflow-x: auto;
+  }
+
+  .ai-size-chart-table-{{ ai_gen_id }} {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: {{ block.settings.table_text_size }}px;
+  }
+
+  .ai-size-chart-table-{{ ai_gen_id }} th,
+  .ai-size-chart-table-{{ ai_gen_id }} td {
+    padding: 12px 16px;
+    text-align: left;
+    border: 1px solid {{ block.settings.table_border_color }};
+  }
+
+  .ai-size-chart-table-{{ ai_gen_id }} th {
+    background-color: {{ block.settings.table_header_background }};
+    color: {{ block.settings.table_header_text_color }};
+    font-weight: 600;
+  }
+
+  .ai-size-chart-table-{{ ai_gen_id }} td {
+    background-color: {{ block.settings.table_cell_background }};
+    color: {{ block.settings.table_cell_text_color }};
+  }
+
+  .ai-size-chart-table-{{ ai_gen_id }} tbody tr:nth-child(even) td {
+    background-color: {{ block.settings.table_row_alt_background }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-size-chart-accordion-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-size-chart-header-{{ ai_gen_id }} {
+      padding: 14px 16px;
+    }
+
+    .ai-size-chart-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.9 }}px;
+    }
+
+    .ai-size-chart-table-{{ ai_gen_id }} th,
+    .ai-size-chart-table-{{ ai_gen_id }} td {
+      padding: 10px 12px;
+      font-size: {{ block.settings.table_text_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<size-chart-accordion-{{ ai_gen_id }}
+  class="ai-size-chart-accordion-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <button
+    class="ai-size-chart-header-{{ ai_gen_id }}"
+    aria-expanded="false"
+    aria-controls="ai-size-chart-content-{{ ai_gen_id }}"
+  >
+    <div class="ai-size-chart-title-wrapper-{{ ai_gen_id }}">
+      <span class="ai-size-chart-emoji-{{ ai_gen_id }}">📏</span>
+      <h3 class="ai-size-chart-title-{{ ai_gen_id }}">{{ block.settings.title }}</h3>
+    </div>
+    <svg
+      class="ai-size-chart-icon-{{ ai_gen_id }}"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  <div
+    id="ai-size-chart-content-{{ ai_gen_id }}"
+    class="ai-size-chart-content-{{ ai_gen_id }}"
+  >
+    <div class="ai-size-chart-inner-{{ ai_gen_id }}">
+      {% if block.settings.size_chart_image %}
+        <div class="ai-size-chart-image-wrapper-{{ ai_gen_id }}">
+          <img
+            src="{{ block.settings.size_chart_image | image_url: width: 1200 }}"
+            alt="{{ block.settings.size_chart_image.alt | default: 'Size chart' | escape }}"
+            loading="lazy"
+            width="{{ block.settings.size_chart_image.width }}"
+            height="{{ block.settings.size_chart_image.height }}"
+            class="ai-size-chart-image-{{ ai_gen_id }}"
+          >
+        </div>
+      {% endif %}
+
+      <div class="ai-size-chart-table-wrapper-{{ ai_gen_id }}">
+        <table class="ai-size-chart-table-{{ ai_gen_id }}">
+          <thead>
+            <tr>
+              <th>{{ block.settings.column_1_header }}</th>
+              <th>{{ block.settings.column_2_header }}</th>
+              <th>{{ block.settings.column_3_header }}</th>
+              <th>{{ block.settings.column_4_header }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ block.settings.row_1_col_1 }}</td>
+              <td>{{ block.settings.row_1_col_2 }}</td>
+              <td>{{ block.settings.row_1_col_3 }}</td>
+              <td>{{ block.settings.row_1_col_4 }}</td>
+            </tr>
+            <tr>
+              <td>{{ block.settings.row_2_col_1 }}</td>
+              <td>{{ block.settings.row_2_col_2 }}</td>
+              <td>{{ block.settings.row_2_col_3 }}</td>
+              <td>{{ block.settings.row_2_col_4 }}</td>
+            </tr>
+            <tr>
+              <td>{{ block.settings.row_3_col_1 }}</td>
+              <td>{{ block.settings.row_3_col_2 }}</td>
+              <td>{{ block.settings.row_3_col_3 }}</td>
+              <td>{{ block.settings.row_3_col_4 }}</td>
+            </tr>
+            <tr>
+              <td>{{ block.settings.row_4_col_1 }}</td>
+              <td>{{ block.settings.row_4_col_2 }}</td>
+              <td>{{ block.settings.row_4_col_3 }}</td>
+              <td>{{ block.settings.row_4_col_4 }}</td>
+            </tr>
+            <tr>
+              <td>{{ block.settings.row_5_col_1 }}</td>
+              <td>{{ block.settings.row_5_col_2 }}</td>
+              <td>{{ block.settings.row_5_col_3 }}</td>
+              <td>{{ block.settings.row_5_col_4 }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</size-chart-accordion-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class SizeChartAccordion{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.button = this.querySelector('.ai-size-chart-header-{{ ai_gen_id }}');
+        this.content = this.querySelector('.ai-size-chart-content-{{ ai_gen_id }}');
+        this.icon = this.querySelector('.ai-size-chart-icon-{{ ai_gen_id }}');
+
+        this.button.addEventListener('click', () => this.toggle());
+      }
+
+      toggle() {
+        const isOpen = this.content.classList.contains('open');
+
+        if (isOpen) {
+          this.close();
+        } else {
+          this.open();
+        }
+      }
+
+      open() {
+        this.content.classList.add('open');
+        this.icon.classList.add('open');
+        this.button.setAttribute('aria-expanded', 'true');
+      }
+
+      close() {
+        this.content.classList.remove('open');
+        this.icon.classList.remove('open');
+        this.button.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    customElements.define('size-chart-accordion-{{ ai_gen_id }}', SizeChartAccordion{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Size chart",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Size chart"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "size_chart_image",
+      "label": "Size chart image"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Table headers"
+    },
+    {
+      "type": "text",
+      "id": "column_1_header",
+      "label": "Column 1 header",
+      "default": "Size"
+    },
+    {
+      "type": "text",
+      "id": "column_2_header",
+      "label": "Column 2 header",
+      "default": "Chest (cm)"
+    },
+    {
+      "type": "text",
+      "id": "column_3_header",
+      "label": "Column 3 header",
+      "default": "Waist (cm)"
+    },
+    {
+      "type": "text",
+      "id": "column_4_header",
+      "label": "Column 4 header",
+      "default": "Hips (cm)"
+    },
+    {
+      "type": "header",
+      "content": "Row 1"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_1",
+      "label": "Column 1",
+      "default": "XS"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_2",
+      "label": "Column 2",
+      "default": "81-86"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_3",
+      "label": "Column 3",
+      "default": "61-66"
+    },
+    {
+      "type": "text",
+      "id": "row_1_col_4",
+      "label": "Column 4",
+      "default": "86-91"
+    },
+    {
+      "type": "header",
+      "content": "Row 2"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_1",
+      "label": "Column 1",
+      "default": "S"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_2",
+      "label": "Column 2",
+      "default": "86-91"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_3",
+      "label": "Column 3",
+      "default": "66-71"
+    },
+    {
+      "type": "text",
+      "id": "row_2_col_4",
+      "label": "Column 4",
+      "default": "91-96"
+    },
+    {
+      "type": "header",
+      "content": "Row 3"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_1",
+      "label": "Column 1",
+      "default": "M"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_2",
+      "label": "Column 2",
+      "default": "91-96"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_3",
+      "label": "Column 3",
+      "default": "71-76"
+    },
+    {
+      "type": "text",
+      "id": "row_3_col_4",
+      "label": "Column 4",
+      "default": "96-101"
+    },
+    {
+      "type": "header",
+      "content": "Row 4"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_1",
+      "label": "Column 1",
+      "default": "L"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_2",
+      "label": "Column 2",
+      "default": "96-101"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_3",
+      "label": "Column 3",
+      "default": "76-81"
+    },
+    {
+      "type": "text",
+      "id": "row_4_col_4",
+      "label": "Column 4",
+      "default": "101-106"
+    },
+    {
+      "type": "header",
+      "content": "Row 5"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_1",
+      "label": "Column 1",
+      "default": "XL"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_2",
+      "label": "Column 2",
+      "default": "101-106"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_3",
+      "label": "Column 3",
+      "default": "81-86"
+    },
+    {
+      "type": "text",
+      "id": "row_5_col_4",
+      "label": "Column 4",
+      "default": "106-111"
+    },
+    {
+      "type": "header",
+      "content": "Accordion style"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "color",
+      "id": "header_background",
+      "label": "Header background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "header_hover_background",
+      "label": "Header hover background",
+      "default": "#ebebeb"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "content_background",
+      "label": "Content background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Table style"
+    },
+    {
+      "type": "range",
+      "id": "table_text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "table_border_color",
+      "label": "Border color",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "color",
+      "id": "table_header_background",
+      "label": "Header background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "table_header_text_color",
+      "label": "Header text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "table_cell_background",
+      "label": "Cell background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "table_cell_text_color",
+      "label": "Cell text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "table_row_alt_background",
+      "label": "Alternate row background",
+      "default": "#fafafa"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Size chart"
+    }
+  ]
+}
+{% endschema %}

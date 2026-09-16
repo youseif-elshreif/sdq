@@ -1,0 +1,454 @@
+/* ============================================================
+   SDQ WORLD — Custom design polish & motion
+   Loaded after base.css via snippets/stylesheets.liquid
+   ------------------------------------------------------------
+   Scope: smoother motion, page transitions, hover depth,
+   consistent section typography & rhythm.
+   ============================================================ */
+
+/* ---------- Base motion ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* :root:root — double specificity so these win over the inline
+   tokens emitted by snippets/theme-styles-variables.liquid (loaded later). */
+:root:root {
+  /* Slightly slower, smoother motion than stock Horizon (0.125s) */
+  --animation-speed: 0.2s;
+  --animation-speed-medium: 0.25s;
+  --animation-speed-slow: 0.35s;
+  --animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --hover-transition-duration: 0.3s;
+  --hover-transition-timing: cubic-bezier(0.16, 1, 0.3, 1);
+  --surface-transition-duration: 0.35s;
+}
+
+/* ---------- Page view transitions: soft cross-fade + gentle rise ---------- */
+::view-transition-old(main-content) {
+  animation: sdq-vt-out 0.26s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+::view-transition-new(main-content) {
+  animation: sdq-vt-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes sdq-vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes sdq-vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Section reveal on scroll (added by reveal-on-scroll.js) ---------- */
+.sdq-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.sdq-reveal.sdq-reveal--visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sdq-reveal,
+  .sdq-reveal.sdq-reveal--visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------- Section headings: consistent scale, weight & case ---------- */
+.section-resource-list .text-block :is(h2, h3, h4) {
+  font-family: var(--font-heading--family);
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* ---------- Marquee text: compact & bold (no letter-spacing, keeps Arabic safe) ---------- */
+marquee-component .text-block :is(p, h1, h2, h3, h4) {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ---------- Marquee / announcement bars → brand dark olive #443e2f + white text ---------- */
+.shopify-section:has(> marquee-component) .section-background {
+  background-color: #443e2f;
+}
+
+marquee-component.section {
+  --color-background: #443e2f;
+  --color-background-rgb: 68 62 47;
+  --color-foreground: #ffffff;
+  --color-foreground-rgb: 255 255 255;
+  --color-foreground-heading: #ffffff;
+  --color-foreground-heading-rgb: 255 255 255;
+  background-color: #443e2f;
+  color: #ffffff;
+}
+
+/* ============================================================
+   PRODUCT CARDS — full boxed card
+   ============================================================ */
+
+.product-card {
+  transition: box-shadow var(--hover-transition-duration) var(--hover-transition-timing);
+}
+
+.product-card:hover {
+  box-shadow: 0 18px 36px -18px rgb(0 0 0 / 0.28);
+}
+
+/* Whole card = framed box (border + padding + white surface) */
+.product-card .product-card__content {
+  border: 1px solid #000;
+  border-radius: 12px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+/* Image frame inside the card */
+.product-card .card-gallery {
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #000;
+}
+
+/* Unified image frame for every card gallery (product + recommendations…) */
+.card-gallery.card-gallery {
+  border: 1px solid #000;
+  border-radius: 8px;
+}
+
+.product-card .card-gallery .product-media-container img,
+.product-card .card-gallery > img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card:hover .card-gallery .product-media-container img,
+.product-card:hover .card-gallery > img {
+  transform: scale(1.05);
+}
+
+/* Product title inside cards: confident & readable */
+.product-card .product-card__content :is(h2, h3, h4) {
+  font-family: var(--font-heading--family);
+  font-size: clamp(0.9375rem, 0.9vw, 1rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+/* Price inside cards: a touch stronger for hierarchy */
+.product-card .product-price .price,
+.product-card .product-price .price-item {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.product-card .compare-at-price {
+  font-size: 0.875rem;
+  font-weight: 400;
+  opacity: 0.55;
+}
+
+/* ============================================================
+   COLLECTION / CATEGORY CARDS — clean boxed layout
+   (image on top, uppercase title in a footer strip below)
+   ============================================================ */
+
+.collection-card {
+  transition: box-shadow var(--hover-transition-duration) var(--hover-transition-timing);
+}
+
+.collection-card:hover {
+  box-shadow: 0 18px 36px -18px rgb(0 0 0 / 0.28);
+}
+
+/* `body` prefix keeps specificity above the theme's compiled section
+   stylesheets (which load after sdq-custom.css) */
+body .collection-card.collection-card--image-bg {
+  aspect-ratio: auto;
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+body .collection-card.collection-card--image-bg .collection-card__image {
+  position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1.15;
+  border-radius: 8px;
+  border: 1px solid #000;
+  overflow: hidden;
+}
+
+body .collection-card .collection-card__image img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body .collection-card:hover .collection-card__image img {
+  transform: scale(1.06);
+}
+
+body .collection-card.collection-card--image-bg .collection-card__content {
+  position: relative;
+  height: auto;
+  padding: 12px 4px 2px;
+}
+
+/* Category title: uppercase, tracked, bold — force black text since the
+   card's inline scheme still resolves to white via --color */
+body .collection-card .collection-card__content .text-block {
+  --color: #000 !important;
+  color: #000 !important;
+}
+
+.collection-card .collection-card__content :is(h1, h2, h3, h4, h5, h6, p) {
+  font-family: var(--font-heading--family);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   JUDGE.ME CARDS CAROUSEL — match the new card theme
+   (white cards, black border, rounded, black text)
+   ============================================================ */
+
+.jdgm-cards-carousel {
+  --card-color: #ffffff !important;
+  --text-color: #000000 !important;
+  --header-color: #000000 !important;
+  --stars-color: #000000 !important;
+  --border-radius: 12px !important;
+  --text-size: 15px !important;
+}
+
+/* Outer card = frame (like the product card box) */
+.jdgm-cards-carousel .jdgm-card {
+  border: 1px solid #000 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  padding: 10px !important;
+  gap: 0 !important;
+  background-color: #fff !important;
+  transition:
+    box-shadow var(--hover-transition-duration) var(--hover-transition-timing),
+    transform var(--hover-transition-duration) var(--hover-transition-timing) !important;
+}
+
+/* Inner panel = second frame (mirrors the product card's framed media) */
+.jdgm-cards-carousel .jdgm-card-content {
+  width: 100% !important;
+  border: 1px solid #000 !important;
+  border-radius: 8px !important;
+  padding: 22px 16px !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+
+.jdgm-cards-carousel .jdgm-card:hover {
+  box-shadow: 0 18px 36px -18px rgb(0 0 0 / 0.28) !important;
+  transform: translateY(-4px) !important;
+}
+
+.jdgm-widget.jdgm-cards-carousel .jdgm-title {
+  font-family: var(--font-heading--family);
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Review media image — framed like the product card media */
+.jdgm-cards-carousel .jdgm-card img,
+.jdgm-cards-carousel .jdgm-card-content img,
+.jdgm-cards-carousel .jdgm-media-card img {
+  border: 1px solid #000 !important;
+  border-radius: 8px !important;
+}
+
+/* Full review text — never truncate the reviews */
+.jdgm-cards-carousel .jdgm-card,
+.jdgm-cards-carousel .jdgm-text-card,
+.jdgm-cards-carousel .jdgm-media-card {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+.jdgm-cards-carousel .jdgm-text,
+.jdgm-cards-carousel .jdgm-text p,
+.jdgm-cards-carousel .jdgm-media-card .jdgm-text p {
+  -webkit-line-clamp: unset !important;
+  display: block !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* ============================================================
+   NAV — clean uppercase links with underline active state
+   NOTE: selectors carry higher specificity than the theme's
+   section stylesheets (compiled_assets/styles.css loads AFTER
+   sdq-custom.css), so these rules always win.
+   ============================================================ */
+
+/* Taller header */
+html .header.header--compact {
+  --header-padding: 12px;
+}
+
+/* Bottom border + light shadow under the header */
+.header__row--top {
+  border-bottom: 1px solid #000;
+}
+
+#header-component {
+  box-shadow: 0 6px 18px -12px rgb(0 0 0 / 0.25);
+}
+
+/* Top-level links: plain uppercase labels with generous spacing */
+.header-menu .menu-list__link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.header-menu .menu-list__link-title {
+  padding-inline: 16px;
+  border: none;
+  background: none;
+  position: relative;
+  transition: color 0.3s var(--animation-easing);
+}
+
+/* Animated underline — grows from the center on hover, persistent when active */
+.header-menu .menu-list__list-item:not([slot='overflow']) .menu-list__link-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translateX(-50%);
+  transition: width 0.3s var(--animation-easing);
+}
+
+.header-menu .menu-list__list-item:not([slot='overflow']):hover .menu-list__link-title::after,
+.header-menu .menu-list__list-item:not([slot='overflow']) .menu-list__link--active .menu-list__link-title::after,
+.header-menu .menu-list__list-item:not([slot='overflow']) .menu-list__link[aria-current='page'] .menu-list__link-title::after {
+  width: 100%;
+}
+
+/* Active / current page: bolder */
+.header-menu .menu-list__list-item:not([slot='overflow']) .menu-list__link--active,
+.header-menu .menu-list__list-item:not([slot='overflow']) .menu-list__link[aria-current='page'] {
+  font-weight: 700;
+}
+
+/* Mobile navigation bar links: underline active, no frames */
+.menu-list__item {
+  border: none;
+  border-radius: 0;
+  padding: 4px 0;
+  position: relative;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.menu-list__item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--animation-easing);
+}
+
+.menu-list__item:hover::after,
+.menu-list__item[aria-current='page']::after {
+  transform: scaleX(1);
+}
+
+/* ============================================================
+   PAGE ENTRANCE FALLBACK (when View Transitions API is missing)
+   JS adds .sdq-no-vt on <html> when startViewTransition is unavailable.
+   ============================================================ */
+
+html.sdq-no-vt main.content-for-layout {
+  animation: sdq-page-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes sdq-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Reduced motion: kill decorative motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .collection-card,
+  .product-card .card-gallery img,
+  .collection-card .card-gallery img {
+    transition: none;
+    transform: none;
+  }
+
+  .menu-list__link-title,
+  .menu-list__link-title::after,
+  .menu-list__item,
+  .menu-list__item::after {
+    transition: none;
+  }
+
+  html.sdq-no-vt main.content-for-layout {
+    animation: none;
+  }
+}

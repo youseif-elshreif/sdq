@@ -1,0 +1,571 @@
+{% doc %}
+  @prompt
+    Create a custom product page block called "Color Swatches" that displays clickable color swatch buttons. Each swatch links to a separate product page URL. The block should allow merchants to add multiple swatches, each with a color name, a hex color value, and a URL to another product page. The currently active product's swatch should appear selected/highlighted. Swatches should be circular buttons styled to match a premium streetwear brand aesthetic.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-color-swatches-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+  }
+
+  .ai-color-swatches__container-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+  }
+
+  .ai-color-swatches__label-{{ ai_gen_id }} {
+    font-family: {{ block.settings.label_font }};
+    font-size: {{ block.settings.label_size }}px;
+    font-weight: {{ block.settings.label_weight }};
+    color: {{ block.settings.label_color }};
+    margin-bottom: {{ block.settings.label_spacing }}px;
+    text-transform: {{ block.settings.label_transform }};
+    letter-spacing: {{ block.settings.label_letter_spacing }}px;
+  }
+
+  .ai-color-swatches__grid-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: {{ block.settings.swatch_gap }}px;
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }} {
+    position: relative;
+    display: block;
+    width: {{ block.settings.swatch_size }}px;
+    height: {{ block.settings.swatch_size }}px;
+    border-radius: 50%;
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}:hover {
+    transform: scale({{ block.settings.hover_scale }});
+    box-shadow: 0 4px 12px rgba(0, 0, 0, {{ block.settings.hover_shadow_opacity }});
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}--active {
+    border-color: {{ block.settings.active_border_color }};
+    border-width: {{ block.settings.active_border_width }}px;
+    box-shadow: 0 0 0 {{ block.settings.active_ring_width }}px {{ block.settings.active_ring_color }};
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}--active:hover {
+    transform: scale(1);
+  }
+
+  .ai-color-swatches__color-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .ai-color-swatches__tooltip-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: {{ block.settings.tooltip_bg }};
+    color: {{ block.settings.tooltip_text }};
+    padding: 6px 12px;
+    border-radius: {{ block.settings.tooltip_radius }}px;
+    font-size: {{ block.settings.tooltip_size }}px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}:hover .ai-color-swatches__tooltip-{{ ai_gen_id }} {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-color-swatches__container-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-color-swatches__swatch-{{ ai_gen_id }} {
+      width: {{ block.settings.swatch_size | times: 0.9 }}px;
+      height: {{ block.settings.swatch_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-color-swatches-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-color-swatches__container-{{ ai_gen_id }}">
+    {% if block.settings.label != blank %}
+      <div class="ai-color-swatches__label-{{ ai_gen_id }}">
+        {{ block.settings.label }}
+      </div>
+    {% endif %}
+
+    <div class="ai-color-swatches__grid-{{ ai_gen_id }}">
+      {% for i in (1..8) %}
+        {% liquid
+          assign color_name_key = 'color_' | append: i | append: '_name'
+          assign color_hex_key = 'color_' | append: i | append: '_hex'
+          assign color_url_key = 'color_' | append: i | append: '_url'
+          
+          assign color_name = block.settings[color_name_key]
+          assign color_hex = block.settings[color_hex_key]
+          assign color_url = block.settings[color_url_key]
+        %}
+
+        {% if color_name != blank and color_hex != blank and color_url != blank %}
+          {% assign is_active = false %}
+          {% if product.url == color_url or request.path == color_url %}
+            {% assign is_active = true %}
+          {% endif %}
+
+          <a
+            href="{{ color_url }}"
+            class="ai-color-swatches__swatch-{{ ai_gen_id }} {% if is_active %}ai-color-swatches__swatch-{{ ai_gen_id }}--active{% endif %}"
+            aria-label="{{ color_name }}"
+            {% if is_active %}aria-current="page"{% endif %}
+          >
+            <span
+              class="ai-color-swatches__color-{{ ai_gen_id }}"
+              style="background-color: {{ color_hex }};"
+            ></span>
+            {% if block.settings.show_tooltip %}
+              <span class="ai-color-swatches__tooltip-{{ ai_gen_id }}">
+                {{ color_name }}
+              </span>
+            {% endif %}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Color swatches",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Label"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label text",
+      "default": "Color"
+    },
+    {
+      "type": "select",
+      "id": "label_font",
+      "label": "Font",
+      "options": [
+        {
+          "value": "var(--font-body-family)",
+          "label": "Body"
+        },
+        {
+          "value": "var(--font-heading-family)",
+          "label": "Heading"
+        },
+        {
+          "value": "var(--font-subheading-family)",
+          "label": "Subheading"
+        }
+      ],
+      "default": "var(--font-heading-family)"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "label_transform",
+      "label": "Text case",
+      "options": [
+        {
+          "value": "none",
+          "label": "Default"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "range",
+      "id": "label_letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "label_spacing",
+      "label": "Spacing below",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Swatches"
+    },
+    {
+      "type": "range",
+      "id": "swatch_size",
+      "label": "Size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "swatch_gap",
+      "label": "Gap between swatches",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#E6E6E6"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Hover effect"
+    },
+    {
+      "type": "range",
+      "id": "hover_scale",
+      "label": "Scale",
+      "min": 1,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
+      "type": "range",
+      "id": "hover_shadow_opacity",
+      "label": "Shadow opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.2
+    },
+    {
+      "type": "header",
+      "content": "Active state"
+    },
+    {
+      "type": "range",
+      "id": "active_border_width",
+      "label": "Border width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "active_border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "active_ring_width",
+      "label": "Ring width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "active_ring_color",
+      "label": "Ring color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Tooltip"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tooltip",
+      "label": "Show color name on hover",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "tooltip_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "tooltip_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 12,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "tooltip_bg",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "tooltip_text",
+      "label": "Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Color 1"
+    },
+    {
+      "type": "text",
+      "id": "color_1_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_1_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_1_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Color 2"
+    },
+    {
+      "type": "text",
+      "id": "color_2_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_2_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_2_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Color 3"
+    },
+    {
+      "type": "text",
+      "id": "color_3_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_3_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_3_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Color 4"
+    },
+    {
+      "type": "text",
+      "id": "color_4_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_4_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_4_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Color 5"
+    },
+    {
+      "type": "text",
+      "id": "color_5_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_5_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_5_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Color 6"
+    },
+    {
+      "type": "text",
+      "id": "color_6_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_6_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_6_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Color 7"
+    },
+    {
+      "type": "text",
+      "id": "color_7_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_7_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_7_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Color 8"
+    },
+    {
+      "type": "text",
+      "id": "color_8_name",
+      "label": "Name"
+    },
+    {
+      "type": "color",
+      "id": "color_8_hex",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "color_8_url",
+      "label": "Product page URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Color swatches"
+    }
+  ]
+}
+{% endschema %}

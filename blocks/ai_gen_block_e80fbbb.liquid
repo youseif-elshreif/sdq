@@ -1,0 +1,567 @@
+{% doc %}
+  @prompt
+    Create a custom product page block called "Color Swatches" that displays clickable color swatch buttons. Each swatch links to a separate product page URL. The block should allow merchants to add multiple swatches, each with a color name, a hex color value, and a URL to another product page. The currently active product's swatch should appear selected/highlighted. Swatches should be circular buttons styled to match a premium streetwear brand aesthetic.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-color-swatches-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+  }
+
+  .ai-color-swatches__label-{{ ai_gen_id }} {
+    font-family: var(--font-subheading-family);
+    font-size: {{ block.settings.label_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.label_color }};
+    margin-bottom: 12px;
+    display: block;
+    text-transform: {{ block.settings.label_text_transform }};
+    letter-spacing: 0.5px;
+  }
+
+  .ai-color-swatches__container-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: {{ block.settings.swatch_spacing }}px;
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }} {
+    position: relative;
+    width: {{ block.settings.swatch_size }}px;
+    height: {{ block.settings.swatch_size }}px;
+    border-radius: 50%;
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}--active {
+    border-color: {{ block.settings.active_border_color }};
+    border-width: {{ block.settings.active_border_width }}px;
+    box-shadow: 0 0 0 {{ block.settings.active_ring_width }}px {{ block.settings.active_ring_color }};
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}--active:hover {
+    transform: scale(1.05);
+  }
+
+  .ai-color-swatches__link-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+  }
+
+  .ai-color-swatches__color-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .ai-color-swatches__tooltip-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: {{ block.settings.tooltip_bg_color }};
+    color: {{ block.settings.tooltip_text_color }};
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-color-swatches__tooltip-{{ ai_gen_id }}::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: {{ block.settings.tooltip_bg_color }};
+  }
+
+  .ai-color-swatches__swatch-{{ ai_gen_id }}:hover .ai-color-swatches__tooltip-{{ ai_gen_id }} {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-color-swatches__swatch-{{ ai_gen_id }} {
+      width: {{ block.settings.swatch_size | times: 0.9 }}px;
+      height: {{ block.settings.swatch_size | times: 0.9 }}px;
+    }
+
+    .ai-color-swatches__label-{{ ai_gen_id }} {
+      font-size: {{ block.settings.label_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<color-swatches-{{ ai_gen_id }}
+  class="ai-color-swatches-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.label != blank %}
+    <span class="ai-color-swatches__label-{{ ai_gen_id }}">{{ block.settings.label }}</span>
+  {% endif %}
+
+  <div class="ai-color-swatches__container-{{ ai_gen_id }}">
+    {% for i in (1..8) %}
+      {% liquid
+        assign swatch_enabled_key = 'swatch_' | append: i | append: '_enabled'
+        assign swatch_name_key = 'swatch_' | append: i | append: '_name'
+        assign swatch_color_key = 'swatch_' | append: i | append: '_color'
+        assign swatch_url_key = 'swatch_' | append: i | append: '_url'
+
+        assign swatch_enabled = block.settings[swatch_enabled_key]
+        assign swatch_name = block.settings[swatch_name_key]
+        assign swatch_color = block.settings[swatch_color_key]
+        assign swatch_url = block.settings[swatch_url_key]
+      %}
+
+      {% if swatch_enabled and swatch_color != blank %}
+        {% assign is_active = false %}
+        {% if swatch_url == product.url or swatch_url contains product.handle %}
+          {% assign is_active = true %}
+        {% endif %}
+
+        <div
+          class="ai-color-swatches__swatch-{{ ai_gen_id }} {% if is_active %}ai-color-swatches__swatch-{{ ai_gen_id }}--active{% endif %}"
+          data-swatch-index="{{ i }}"
+        >
+          <a
+            href="{{ swatch_url }}"
+            class="ai-color-swatches__link-{{ ai_gen_id }}"
+            aria-label="{% if swatch_name != blank %}{{ swatch_name }}{% else %}Color option {{ i }}{% endif %}"
+          >
+            <span
+              class="ai-color-swatches__color-{{ ai_gen_id }}"
+              style="background-color: {{ swatch_color }};"
+            ></span>
+          </a>
+          {% if block.settings.show_tooltips and swatch_name != blank %}
+            <span class="ai-color-swatches__tooltip-{{ ai_gen_id }}">{{ swatch_name }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</color-swatches-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ColorSwatches{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.swatches = this.querySelectorAll('.ai-color-swatches__swatch-{{ ai_gen_id }}');
+        this.setupAccessibility();
+      }
+
+      setupAccessibility() {
+        this.swatches.forEach((swatch) => {
+          const link = swatch.querySelector('.ai-color-swatches__link-{{ ai_gen_id }}');
+          
+          link.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              link.click();
+            }
+          });
+        });
+      }
+    }
+
+    customElements.define('color-swatches-{{ ai_gen_id }}', ColorSwatches{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Color swatches",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Label"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label text",
+      "default": "Available Colors"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "label_text_transform",
+      "label": "Label text case",
+      "options": [
+        {
+          "value": "none",
+          "label": "Default"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Swatches"
+    },
+    {
+      "type": "range",
+      "id": "swatch_size",
+      "label": "Swatch size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "swatch_spacing",
+      "label": "Spacing between swatches",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Active swatch style"
+    },
+    {
+      "type": "range",
+      "id": "active_border_width",
+      "label": "Active border width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "color",
+      "id": "active_border_color",
+      "label": "Active border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "active_ring_width",
+      "label": "Active ring width",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "active_ring_color",
+      "label": "Active ring color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Tooltips"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tooltips",
+      "label": "Show color name on hover",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "tooltip_bg_color",
+      "label": "Tooltip background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "tooltip_text_color",
+      "label": "Tooltip text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_1_enabled",
+      "label": "Enable swatch 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "swatch_1_name",
+      "label": "Color name",
+      "default": "Black"
+    },
+    {
+      "type": "color",
+      "id": "swatch_1_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "url",
+      "id": "swatch_1_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_2_enabled",
+      "label": "Enable swatch 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "swatch_2_name",
+      "label": "Color name",
+      "default": "White"
+    },
+    {
+      "type": "color",
+      "id": "swatch_2_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "url",
+      "id": "swatch_2_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_3_enabled",
+      "label": "Enable swatch 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "swatch_3_name",
+      "label": "Color name",
+      "default": "Navy"
+    },
+    {
+      "type": "color",
+      "id": "swatch_3_color",
+      "label": "Color",
+      "default": "#1a2a4a"
+    },
+    {
+      "type": "url",
+      "id": "swatch_3_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_4_enabled",
+      "label": "Enable swatch 4",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "swatch_4_name",
+      "label": "Color name"
+    },
+    {
+      "type": "color",
+      "id": "swatch_4_color",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "swatch_4_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_5_enabled",
+      "label": "Enable swatch 5",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "swatch_5_name",
+      "label": "Color name"
+    },
+    {
+      "type": "color",
+      "id": "swatch_5_color",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "swatch_5_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_6_enabled",
+      "label": "Enable swatch 6",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "swatch_6_name",
+      "label": "Color name"
+    },
+    {
+      "type": "color",
+      "id": "swatch_6_color",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "swatch_6_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 7"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_7_enabled",
+      "label": "Enable swatch 7",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "swatch_7_name",
+      "label": "Color name"
+    },
+    {
+      "type": "color",
+      "id": "swatch_7_color",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "swatch_7_url",
+      "label": "Product page URL"
+    },
+    {
+      "type": "header",
+      "content": "Swatch 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatch_8_enabled",
+      "label": "Enable swatch 8",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "swatch_8_name",
+      "label": "Color name"
+    },
+    {
+      "type": "color",
+      "id": "swatch_8_color",
+      "label": "Color"
+    },
+    {
+      "type": "url",
+      "id": "swatch_8_url",
+      "label": "Product page URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Color swatches"
+    }
+  ]
+}
+{% endschema %}

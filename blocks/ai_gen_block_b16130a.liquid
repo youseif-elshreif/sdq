@@ -1,0 +1,448 @@
+{% doc %}
+  @prompt
+    Create a Size Chart accordion block for a product page. Before the "Size chart" title text, display the 📏 ruler emoji. When clicked, it expands to show: 1) An image picker setting so the merchant can upload a size chart photo, 2) A size chart table with sizes from M, L, XL, XXL, 3) A text area below the table where the merchant can write a custom note or message. The block should match a modern, clean product page style.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-size-chart-accordion-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    border: 1px solid #0000000f;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+
+  .ai-size-chart-accordion__header-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 16px 20px;
+    background-color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    text-align: left;
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-weight: {{ block.settings.heading_font.weight }};
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .ai-size-chart-accordion__header-{{ ai_gen_id }}:hover {
+    background-color: #fafafa;
+  }
+
+  .ai-size-chart-accordion__title-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .ai-size-chart-accordion__emoji-{{ ai_gen_id }} {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .ai-size-chart-accordion__icon-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .ai-size-chart-accordion__icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    stroke: #000000cf;
+    stroke-width: 2;
+  }
+
+  .ai-size-chart-accordion-{{ ai_gen_id }}.active .ai-size-chart-accordion__icon-{{ ai_gen_id }} {
+    transform: rotate(180deg);
+  }
+
+  .ai-size-chart-accordion__content-{{ ai_gen_id }} {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .ai-size-chart-accordion__content-inner-{{ ai_gen_id }} {
+    padding: 0 20px 20px;
+  }
+
+  .ai-size-chart-accordion__image-wrapper-{{ ai_gen_id }} {
+    margin-bottom: 20px;
+  }
+
+  .ai-size-chart-accordion__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .ai-size-chart-accordion__image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .ai-size-chart-accordion__image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    opacity: 0.3;
+  }
+
+  .ai-size-chart-accordion__table-{{ ai_gen_id }} {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-weight: {{ block.settings.body_font.weight }};
+    font-size: 14px;
+  }
+
+  .ai-size-chart-accordion__table-{{ ai_gen_id }} th,
+  .ai-size-chart-accordion__table-{{ ai_gen_id }} td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #0000000f;
+  }
+
+  .ai-size-chart-accordion__table-{{ ai_gen_id }} th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .ai-size-chart-accordion__table-{{ ai_gen_id }} td {
+    color: #000000cf;
+  }
+
+  .ai-size-chart-accordion__table-{{ ai_gen_id }} tr:last-child td {
+    border-bottom: none;
+  }
+
+  .ai-size-chart-accordion__note-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-weight: {{ block.settings.body_font.weight }};
+    font-size: 14px;
+    line-height: 1.6;
+    color: #000000cf;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-size-chart-accordion-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-size-chart-accordion__table-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+
+    .ai-size-chart-accordion__table-{{ ai_gen_id }} th,
+    .ai-size-chart-accordion__table-{{ ai_gen_id }} td {
+      padding: 10px 8px;
+    }
+  }
+{% endstyle %}
+
+<size-chart-accordion-{{ ai_gen_id }}
+  class="ai-size-chart-accordion-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <button
+    class="ai-size-chart-accordion__header-{{ ai_gen_id }}"
+    aria-expanded="false"
+    aria-controls="ai-size-chart-content-{{ ai_gen_id }}"
+  >
+    <div class="ai-size-chart-accordion__title-{{ ai_gen_id }}">
+      <span class="ai-size-chart-accordion__emoji-{{ ai_gen_id }}">📏</span>
+      <span>{{ block.settings.title }}</span>
+    </div>
+    <div class="ai-size-chart-accordion__icon-{{ ai_gen_id }}">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+  </button>
+
+  <div
+    class="ai-size-chart-accordion__content-{{ ai_gen_id }}"
+    id="ai-size-chart-content-{{ ai_gen_id }}"
+  >
+    <div class="ai-size-chart-accordion__content-inner-{{ ai_gen_id }}">
+      {% if block.settings.size_chart_image %}
+        <div class="ai-size-chart-accordion__image-wrapper-{{ ai_gen_id }}">
+          <img
+            src="{{ block.settings.size_chart_image | image_url: width: 1000 }}"
+            alt="{{ block.settings.size_chart_image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.size_chart_image.width }}"
+            height="{{ block.settings.size_chart_image.height }}"
+            class="ai-size-chart-accordion__image-{{ ai_gen_id }}"
+          >
+        </div>
+      {% endif %}
+
+      <table class="ai-size-chart-accordion__table-{{ ai_gen_id }}">
+        <thead>
+          <tr>
+            <th>Size</th>
+            <th>{{ block.settings.measurement_1_label }}</th>
+            <th>{{ block.settings.measurement_2_label }}</th>
+            <th>{{ block.settings.measurement_3_label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>M</td>
+            <td>{{ block.settings.size_m_measurement_1 }}</td>
+            <td>{{ block.settings.size_m_measurement_2 }}</td>
+            <td>{{ block.settings.size_m_measurement_3 }}</td>
+          </tr>
+          <tr>
+            <td>L</td>
+            <td>{{ block.settings.size_l_measurement_1 }}</td>
+            <td>{{ block.settings.size_l_measurement_2 }}</td>
+            <td>{{ block.settings.size_l_measurement_3 }}</td>
+          </tr>
+          <tr>
+            <td>XL</td>
+            <td>{{ block.settings.size_xl_measurement_1 }}</td>
+            <td>{{ block.settings.size_xl_measurement_2 }}</td>
+            <td>{{ block.settings.size_xl_measurement_3 }}</td>
+          </tr>
+          <tr>
+            <td>XXL</td>
+            <td>{{ block.settings.size_xxl_measurement_1 }}</td>
+            <td>{{ block.settings.size_xxl_measurement_2 }}</td>
+            <td>{{ block.settings.size_xxl_measurement_3 }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {% if block.settings.custom_note != blank %}
+        <div class="ai-size-chart-accordion__note-{{ ai_gen_id }}">
+          {{ block.settings.custom_note }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</size-chart-accordion-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class SizeChartAccordion{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.button = this.querySelector('.ai-size-chart-accordion__header-{{ ai_gen_id }}');
+        this.content = this.querySelector('.ai-size-chart-accordion__content-{{ ai_gen_id }}');
+        this.contentInner = this.querySelector('.ai-size-chart-accordion__content-inner-{{ ai_gen_id }}');
+
+        this.button.addEventListener('click', () => this.toggle());
+      }
+
+      toggle() {
+        const isActive = this.classList.contains('active');
+
+        if (isActive) {
+          this.close();
+        } else {
+          this.open();
+        }
+      }
+
+      open() {
+        this.classList.add('active');
+        this.button.setAttribute('aria-expanded', 'true');
+        this.content.style.maxHeight = this.contentInner.scrollHeight + 'px';
+      }
+
+      close() {
+        this.classList.remove('active');
+        this.button.setAttribute('aria-expanded', 'false');
+        this.content.style.maxHeight = '0';
+      }
+    }
+
+    customElements.define('size-chart-accordion-{{ ai_gen_id }}', SizeChartAccordion{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Size chart",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Size chart"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Size chart image"
+    },
+    {
+      "type": "image_picker",
+      "id": "size_chart_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Table measurements"
+    },
+    {
+      "type": "text",
+      "id": "measurement_1_label",
+      "label": "Measurement 1 label",
+      "default": "Chest (cm)"
+    },
+    {
+      "type": "text",
+      "id": "measurement_2_label",
+      "label": "Measurement 2 label",
+      "default": "Waist (cm)"
+    },
+    {
+      "type": "text",
+      "id": "measurement_3_label",
+      "label": "Measurement 3 label",
+      "default": "Length (cm)"
+    },
+    {
+      "type": "header",
+      "content": "Size M"
+    },
+    {
+      "type": "text",
+      "id": "size_m_measurement_1",
+      "label": "Measurement 1",
+      "default": "96-101"
+    },
+    {
+      "type": "text",
+      "id": "size_m_measurement_2",
+      "label": "Measurement 2",
+      "default": "81-86"
+    },
+    {
+      "type": "text",
+      "id": "size_m_measurement_3",
+      "label": "Measurement 3",
+      "default": "71"
+    },
+    {
+      "type": "header",
+      "content": "Size L"
+    },
+    {
+      "type": "text",
+      "id": "size_l_measurement_1",
+      "label": "Measurement 1",
+      "default": "106-111"
+    },
+    {
+      "type": "text",
+      "id": "size_l_measurement_2",
+      "label": "Measurement 2",
+      "default": "91-96"
+    },
+    {
+      "type": "text",
+      "id": "size_l_measurement_3",
+      "label": "Measurement 3",
+      "default": "74"
+    },
+    {
+      "type": "header",
+      "content": "Size XL"
+    },
+    {
+      "type": "text",
+      "id": "size_xl_measurement_1",
+      "label": "Measurement 1",
+      "default": "116-121"
+    },
+    {
+      "type": "text",
+      "id": "size_xl_measurement_2",
+      "label": "Measurement 2",
+      "default": "101-106"
+    },
+    {
+      "type": "text",
+      "id": "size_xl_measurement_3",
+      "label": "Measurement 3",
+      "default": "77"
+    },
+    {
+      "type": "header",
+      "content": "Size XXL"
+    },
+    {
+      "type": "text",
+      "id": "size_xxl_measurement_1",
+      "label": "Measurement 1",
+      "default": "126-131"
+    },
+    {
+      "type": "text",
+      "id": "size_xxl_measurement_2",
+      "label": "Measurement 2",
+      "default": "111-116"
+    },
+    {
+      "type": "text",
+      "id": "size_xxl_measurement_3",
+      "label": "Measurement 3",
+      "default": "80"
+    },
+    {
+      "type": "header",
+      "content": "Custom note"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_note",
+      "label": "Note",
+      "default": "All measurements are approximate. For the best fit, please measure yourself and compare with the size chart."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Size chart"
+    }
+  ]
+}
+{% endschema %}
