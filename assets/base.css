@@ -2387,6 +2387,17 @@ product-price.text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) .volume-pricing-note {
   white-space: nowrap;
 }
 
+/* SDQ unified price colors on product cards */
+.price-item--regular {
+  color: #555 !important;
+  opacity: 1 !important;
+  text-decoration-thickness: 2px;
+}
+
+.price-item--sale {
+  color: #000 !important;
+}
+
 .price__hidden {
   display: none;
 }
@@ -4212,4 +4223,598 @@ product-recommendations:has([data-has-recommendations='false']) {
     opacity: var(--atc-opacity, 1);
     translate: 0px var(--atc-destination, 0px);
   }
+}
+
+/* ==================================================
+   SDQ — Product page: black border + radius identity
+   ================================================== */
+
+/* Main product image: framed card (matches home product-card border) */
+.product-information media-gallery slideshow-container {
+  border: 1px solid #000;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Rounded thumbnails */
+.product-information .slideshow-controls__thumbnail,
+.product-information .slideshow-controls__thumbnail img {
+  border-radius: 8px;
+}
+
+.product-information .slideshow-controls__thumbnail {
+  overflow: hidden;
+}
+
+/* Variant picker size pills: black border + radius */
+.product-information .variant-option__button-label {
+  border-color: #000;
+  border-radius: 10px;
+}
+
+/* AI size-chart accordion: black border + radius (overrides inline #e6e6e6) */
+.product-information [class^='ai-size-chart-accordion'] {
+  border-color: #000 !important;
+  border-radius: 12px !important;
+}
+
+/* Price: bold + prominent (highlight the key info, like home) */
+.product-information product-price .price,
+.product-information product-price .price-item--sale {
+  font-weight: 600;
+}
+
+/* Product title: clear it up from the plain body default */
+.product-information .text-block.h2 > h1 {
+  letter-spacing: -0.01em;
+}
+
+/* ==================================================
+   SDQ — Judge.me review widget (product page)
+   Overrides Judge.me's injected green/generic styling
+   with the SDQ identity: black accents, Almarai/Assistant,
+   bordered cards. Uses !important to beat the app CSS.
+   ================================================== */
+
+/* Root widget */
+.jdgm-rev-widg {
+  max-width: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+  font-family: var(--font-body--family) !important;
+  color: var(--color-foreground) !important;
+}
+
+/* Titles: "Customer Reviews", "Reviews for other products" */
+.jdgm-rev-widg__title,
+.jdgm-rev-widg__other-reviews-title,
+.jdgm-rev-widg__header .jdgm-rev-widg__title {
+  font-family: var(--font-heading--family) !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+.jdgm-rev-widg__title {
+  font-size: var(--font-h3--size, 1.75rem) !important;
+  margin-block-end: 16px !important;
+}
+
+.jdgm-rev-widg__other-reviews-title {
+  font-size: var(--font-h4--size, 1.5rem) !important;
+  margin-block: 40px 20px !important;
+  padding-block-end: 12px !important;
+  border-block-end: 1px solid #000 !important;
+}
+
+/* Header: breathing room + black rule */
+.jdgm-rev-widg__header {
+  padding-block: 24px 32px !important;
+  border-block-end: 1px solid #000 !important;
+  margin-block-end: 8px !important;
+}
+
+/* Empty state: "Be the first to write a review" */
+.jdgm-rev-widg__empty-reviews,
+.jdgm-rev-widg__no-reviews,
+.jdgm-no-reviews,
+.jdgm-rev-widg__empty-reviews p,
+.jdgm-rev-widg__empty-reviews strong {
+  font-family: var(--font-heading--family) !important;
+  color: #000 !important;
+  text-transform: none !important;
+}
+
+.jdgm-rev-widg__empty-reviews {
+  padding-block: 32px 8px !important;
+  text-align: center !important;
+}
+
+/* Rating summary */
+.jdgm-avg-rev-rating__content,
+.jdgm-avg-rev-rating__content .jdgm-avg-rev-rating,
+.jdgm-rev-widg__summary-average,
+.jdgm-rev-widg__summary-text,
+.jdgm-rev-widg__summary-count {
+  font-family: var(--font-heading--family) !important;
+  color: #000 !important;
+}
+
+.jdgm-avg-rev-rating__content {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+}
+
+/* Stars: black (no green) */
+.jdgm-rev-widg .jdgm-star,
+.jdgm-rev-widg .jdgm-star.jdgm--on,
+.jdgm-rev-widg .jdgm-star.jdgm--half {
+  color: #000 !important;
+}
+
+/* Histogram */
+.jdgm-histogram__bar {
+  background: rgb(0 0 0 / 0.12) !important;
+  border-radius: 4px !important;
+  height: 6px !important;
+}
+
+.jdgm-histogram__bar-content {
+  background: #000 !important;
+  border-radius: 4px !important;
+}
+
+.jdgm-histogram__percentage,
+.jdgm-histogram__frequency {
+  font-family: var(--font-body--family) !important;
+  color: var(--color-foreground) !important;
+}
+
+/* Sort dropdown */
+.jdgm-sort-dropdown-wrapper .jdgm-sort-dropdown,
+.jdgm-sort-dropdown {
+  font-family: var(--font-body--family) !important;
+  color: #000 !important;
+  background-color: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+}
+
+/* "Write a review" button (all variants) */
+.jdgm-write-rev-link,
+a.jdgm-write-rev-link,
+.jdgm-rev-widg__actions .jdgm-write-rev-link {
+  font-family: var(--font-body--family) !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  background-color: #000 !important;
+  background-image: none !important;
+  border: 1px solid #000 !important;
+  border-radius: 14px !important;
+  padding: 12px 26px !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.jdgm-write-rev-link:hover,
+a.jdgm-write-rev-link:hover {
+  background-color: #333 !important;
+  border-color: #333 !important;
+  color: #fff !important;
+}
+
+/* Review cards: bounded card like the theme (list + "other products") */
+.jdgm-rev-widg .jdgm-rev,
+.jdgm-rev-widg__reviews .jdgm-rev,
+.jdgm-rev-widg__other-reviews .jdgm-rev {
+  background: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin-block: 0 16px !important;
+}
+
+/* Author */
+.jdgm-rev__author {
+  font-family: var(--font-heading--family) !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+}
+
+.jdgm-rev__verified,
+.jdgm-rev__verified-badge {
+  color: #000 !important;
+  font-family: var(--font-body--family) !important;
+}
+
+/* Timestamp */
+.jdgm-rev__timestamp,
+.jdgm-rev__time {
+  font-family: var(--font-body--family) !important;
+  color: var(--color-foreground) !important;
+  opacity: 0.65 !important;
+}
+
+/* Review title + body */
+.jdgm-rev__title {
+  font-family: var(--font-heading--family) !important;
+  color: #000 !important;
+  margin-block-start: 8px !important;
+}
+
+.jdgm-rev__content,
+.jdgm-rev__body,
+.jdgm-rev__content p {
+  font-family: var(--font-body--family) !important;
+  color: var(--color-foreground) !important;
+  line-height: 1.6 !important;
+}
+
+/* Review images: rounded */
+.jdgm-rev__pic,
+.jdgm-rev__pic-img,
+.jdgm-rev__pic-img img,
+.jdgm-rev__image,
+.jdgm-rev img {
+  border-radius: 8px !important;
+}
+
+/* Reply / extra content */
+.jdgm-rev__extra-content,
+.jdgm-rev__reply {
+  border-inline-start: 3px solid #000 !important;
+  padding-inline-start: 12px !important;
+  margin-block-start: 12px !important;
+}
+
+/* Product name chip */
+.jdgm-rev__product,
+.jdgm-rev__product-link,
+.jdgm-rev__product-title {
+  display: inline-flex !important;
+  margin-block-start: 12px !important;
+  padding: 4px 12px !important;
+  background-color: rgb(0 0 0 / 0.05) !important;
+  border-radius: 6px !important;
+  font-family: var(--font-body--family) !important;
+  font-size: 0.875rem !important;
+  color: var(--color-foreground) !important;
+}
+
+/* Helpful (thumb) buttons */
+.jdgm-rev__icons,
+.jdgm-rev__icon {
+  color: #000 !important;
+}
+
+/* Pagination */
+.jdgm-paginate {
+  font-family: var(--font-body--family) !important;
+}
+
+.jdgm-paginate a,
+.jdgm-paginate span,
+.jdgm-paginate__page {
+  color: #000 !important;
+  border-radius: 6px !important;
+}
+
+.jdgm-paginate .jdgm-paginate__page.jdgm-curt {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Footer link */
+.jdgm-rev-widg__footer .jdgm-link,
+.jdgm-rev-widg__footer a {
+  color: #000 !important;
+  font-family: var(--font-body--family) !important;
+}
+
+/* "Reviews for other products" wrapper + items */
+.jdgm-rev-widg__other-reviews,
+.jdgm-rev-widg__other-reviews-wrapper,
+.jdgm-rev-widg .jdgm-rev-widg__other-reviews {
+  margin-block-start: 40px !important;
+}
+
+.jdgm-rev-widg__other-reviews .jdgm-rev,
+.jdgm-rev-widg__other-reviews li {
+  background: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin-block-end: 16px !important;
+}
+
+/* In case the other-reviews renders as a carousel inside the widget */
+.jdgm-rev-widg .jdgm-carousel-item,
+.jdgm-rev-widg .jdgm-card {
+  background: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+}
+
+.jdgm-rev-widg .jdgm-carousel-item__product,
+.jdgm-rev-widg .jdgm-card__product {
+  color: #000 !important;
+  font-family: var(--font-body--family) !important;
+}
+
+/* ==================================================
+   SDQ — Judge.me review CARDS (global + robust)
+   Applies to every Judge.me review card wherever it renders,
+   including "Reviews for other products". The home carousel
+   uses .jdgm-carousel-item, so it is NOT affected here.
+   ================================================== */
+
+.jdgm-rev,
+.jdgm-quest {
+  background: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin-block: 0 16px !important;
+}
+
+/* Judge.me sometimes adds a top divider class — keep it black */
+.jdgm-rev.jdgm-divider-top,
+.jdgm-quest.jdgm-divider-top {
+  border-top: 1px solid #000 !important;
+  border-radius: 12px !important;
+  margin-block-start: 0 !important;
+}
+
+/* Any Judge.me heading (covers "Reviews for other products") */
+.jdgm-widget h2,
+.jdgm-widget h3,
+.jdgm-widget h4,
+.jdgm-rev-widg__title,
+.jdgm-rev-widg h2,
+.jdgm-rev-widg h3,
+.jdgm-rev-widg h4 {
+  font-family: var(--font-heading--family) !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* Review internals (global, Judge.me-only classes) */
+.jdgm-rev__author {
+  font-family: var(--font-heading--family) !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+}
+
+.jdgm-verified-by,
+.jdgm-verified-by__text,
+.jdgm-rev__verified {
+  color: #000 !important;
+  font-family: var(--font-body--family) !important;
+}
+
+.jdgm-rev__timestamp {
+  font-family: var(--font-body--family) !important;
+  color: var(--color-foreground) !important;
+  opacity: 0.65 !important;
+}
+
+.jdgm-rev__title {
+  font-family: var(--font-heading--family) !important;
+  color: #000 !important;
+}
+
+.jdgm-rev__body,
+.jdgm-rev__body p,
+.jdgm-rev__content,
+.jdgm-rev__content p {
+  font-family: var(--font-body--family) !important;
+  color: var(--color-foreground) !important;
+  line-height: 1.6 !important;
+}
+
+.jdgm-rev__pic-img,
+.jdgm-rev__pic-img img,
+.jdgm-rev__pics img,
+.jdgm-rev img {
+  border-radius: 8px !important;
+}
+
+.jdgm-rev__reply,
+.jdgm-rev__reply-content,
+.jdgm-rev__replier-wrapper {
+  border-inline-start: 3px solid #000 !important;
+  padding-inline-start: 12px !important;
+  margin-block-start: 12px !important;
+  font-family: var(--font-body--family) !important;
+}
+
+/* Stars in review cards (widget keeps its scoped rule; carousel unaffected) */
+.jdgm-rev .jdgm-star,
+.jdgm-quest .jdgm-star {
+  color: #000 !important;
+}
+
+/* Load more / ask question buttons */
+.jdgm-paginate__load-more,
+.jdgm-ask-question-btn {
+  color: #fff !important;
+  background-color: #000 !important;
+  border: 1px solid #000 !important;
+  border-radius: 14px !important;
+  padding: 12px 26px !important;
+  font-family: var(--font-body--family) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+
+.jdgm-paginate__load-more:hover,
+.jdgm-ask-question-btn:hover {
+  background-color: #333 !important;
+  border-color: #333 !important;
+  color: #fff !important;
+}
+
+/* ==================================================
+   SDQ — Judge.me REVAMP widget (Vue, .jm-* classes)
+   The v3 widget drives its whole look from CSS custom
+   properties which Judge.me sets inline. Overriding them
+   with !important applies the SDQ identity everywhere
+   (cards, stars, buttons, text). This is the real fix.
+   ================================================== */
+
+/* Root tokens (old-widget fallbacks + shared) */
+:root {
+  --jdgm-primary-color: #000 !important;
+  --jdgm-secondary-color: rgba(0, 0, 0, 0.08) !important;
+  --jdgm-star-color: #000 !important;
+  --jdgm-write-review-bg-color: #000 !important;
+  --jdgm-write-review-text-color: #fff !important;
+  --jdgm-paginate-color: #000 !important;
+  --jdgm-reviewer-name-color: #000 !important;
+  --jdgm-border-radius: 12px !important;
+}
+
+/* v3 widget tokens (Judge.me sets these inline on the widget) */
+.jdgm-widget,
+.jdgm-review-widget,
+.jm-review-widget,
+[data-widget-container='review-widget'] {
+  --jm-review-widget-star-and-histogram-color: #000 !important;
+  --jm-review-widget-button-color: #000 !important;
+  --jm-review-widget-button-text-color: #fff !important;
+  --jm-review-widget-text-color: #000 !important;
+  --jm-review-widget-lighter-text-color: #555 !important;
+  --jm-widget-primary-color: #000 !important;
+  --jm-review-widget-form-button-color: #000 !important;
+  --jm-review-widget-form-button-text-color: #fff !important;
+  --jm-review-widget-form-text-color: #000 !important;
+  --jm-review-widget-form-background-color: #fff !important;
+  --jm-review-widget-bar-chart-height: 6px !important;
+  --jm-widget-border-radius: 12px !important;
+  --jm-widget-border-radius-simplified: 12px !important;
+  font-family: var(--font-body--family) !important;
+  color: #000 !important;
+}
+
+/* Review cards — bordered, rounded, padded (re-declare tokens per item
+   because Judge.me repeats them inline on each .jm-review-item) */
+.jm-review-item,
+.jm-carousel-review-item {
+  --jm-box-border-width: 1px !important;
+  --jm-box-padding: 20px !important;
+  --jm-review-widget-star-and-histogram-color: #000 !important;
+  --jm-review-widget-button-color: #000 !important;
+  --jm-review-widget-text-color: #000 !important;
+  --jm-review-widget-lighter-text-color: #555 !important;
+  --jm-widget-primary-color: #000 !important;
+  border: 1px solid #000 !important;
+  border-radius: 12px !important;
+  background-color: #fff !important;
+}
+
+/* Stars: black when filled, light outline when empty */
+.jm-star-rating__filled svg path {
+  fill: #000 !important;
+}
+
+.jm-star-rating__empty svg path,
+.jm-star-rating__half svg path {
+  stroke: #d0d0d0 !important;
+}
+
+/* Typography — Almarai body, Assistant headings */
+.jm-text,
+.jm-reviewer-info__name,
+.jm-carousel-review-item__body,
+.jm-review-content,
+.jm-review-content__body,
+.jm-other-products-reviews-text,
+.jdgm-tab,
+.jdgm-tablist,
+.jdgm-tab-dropdown__select {
+  font-family: var(--font-body--family) !important;
+  color: #000 !important;
+}
+
+.jm-review-widget-minimal-header__title {
+  font-family: var(--font-heading--family) !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+  text-transform: none !important;
+}
+
+/* Buttons — theme (black, rounded) */
+.jm-button,
+.jm-button--primary,
+.jm-action-buttons__button,
+.jdgm-write-rev-link {
+  border-radius: 14px !important;
+  font-family: var(--font-body--family) !important;
+  font-weight: 600 !important;
+}
+
+/* Sort dropdown + filters */
+.jm-sort-filter__select,
+.jdgm-sort-dropdown,
+.jdgm-tab-dropdown__select {
+  color: #000 !important;
+  background-color: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: 8px !important;
+}
+
+/* "Verified" badge + lighter meta text */
+.jm-verified-buyer-badge,
+.jm-verified-buyer-badge__text {
+  color: #000 !important;
+  font-family: var(--font-body--family) !important;
+}
+
+/* Product variant card ("Review for <product>") */
+.jm-product-variant-card {
+  border: 1px solid #000 !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 12px !important;
+}
+
+/* Histogram bars */
+.jdgm-histogram__bar-content {
+  background-color: #000 !important;
+}
+
+.jdgm-histogram__bar {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  border-radius: 4px !important;
+}
+
+/* Pagination active page */
+.jdgm-paginate__page.jdgm-curt {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Equal-height review cards in the carousel (like the home "Customers are saying") */
+.jm-carousel__track {
+  align-items: stretch !important;
+}
+
+.jm-carousel__track > *,
+.jm-carousel-review-item,
+.jm-review-item {
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.jm-carousel-review-item__body,
+.jm-review-item__content {
+  flex: 1 1 auto !important;
 }
