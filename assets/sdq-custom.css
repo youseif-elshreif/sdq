@@ -452,3 +452,44 @@ html.sdq-no-vt main.content-for-layout {
     animation: none;
   }
 }
+
+/* ============================================================
+   CONTACT FORM — boxed to match the new card theme
+   (white surface, black frame, rounded — mirrors product cards)
+   ============================================================ */
+
+/* Form card frame */
+body .contact-form {
+  border: 1px solid #000;
+  border-radius: 12px;
+  padding: 24px;
+  background-color: #fff;
+}
+
+/* Inputs inside the card: crisp black frames + white surface */
+body .contact-form .contact-form__input {
+  background-color: #fff;
+  border-color: #000;
+  border-radius: 8px;
+}
+
+body .contact-form .contact-form__input:hover {
+  background-color: #fff;
+}
+
+body .contact-form .contact-form__input:focus {
+  border-color: #000;
+  outline: 2px solid #000;
+  outline-offset: 1px;
+}
+
+/* Submit button: full-width primary action inside the card */
+body .contact-form .submit-button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Labels follow the theme's heading voice */
+body .contact-form .contact-form__label {
+  font-family: var(--font-heading--family);
+}

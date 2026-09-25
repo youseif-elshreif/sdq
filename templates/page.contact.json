@@ -19,19 +19,19 @@
             "width": "100%",
             "max_width": "normal",
             "alignment": "center",
-            "type_preset": "h2",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "2rem",
+            "line_height": "tight",
+            "letter_spacing": "tight",
+            "case": "uppercase",
+            "wrap": "balance",
+            "color": "var(--color-foreground-heading)",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
             "padding-block-start": 0,
-            "padding-block-end": 0,
+            "padding-block-end": 8,
             "padding-inline-start": 0,
             "padding-inline-end": 0
           },
@@ -46,7 +46,7 @@
             "max_width": "narrow",
             "alignment": "center",
             "type_preset": "rte",
-            "font": "var(--font-primary--family)",
+            "font": "var(--font-body--family)",
             "font_size": "",
             "line_height": "normal",
             "letter_spacing": "normal",
@@ -70,15 +70,41 @@
       ],
       "settings": {
         "content_direction": "column",
-        "gap": 32,
-        "color_scheme": "",
-        "padding-block-start": 40,
-        "padding-block-end": 0
+        "gap": 16,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 64,
+        "padding-block-end": 8
       }
     },
     "form": {
       "type": "section",
       "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>Send us a message</h2>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "tight",
+            "case": "uppercase",
+            "wrap": "balance",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
         "contact_form_UwiCkQ": {
           "type": "contact-form",
           "settings": {
@@ -112,6 +138,7 @@
         }
       },
       "block_order": [
+        "heading",
         "contact_form_UwiCkQ"
       ],
       "name": "t:names.contact_form",
@@ -123,7 +150,7 @@
         "align_baseline": false,
         "horizontal_alignment_flex_direction_column": "center",
         "vertical_alignment_flex_direction_column": "center",
-        "gap": 32,
+        "gap": 24,
         "section_width": "page-width",
         "section_height": "",
         "section_height_custom": 50,
@@ -139,8 +166,8 @@
         "overlay_color": "#00000026",
         "overlay_style": "solid",
         "gradient_direction": "to top",
-        "padding-block-start": 32,
-        "padding-block-end": 84
+        "padding-block-start": 24,
+        "padding-block-end": 80
       }
     }
   },
